@@ -8,10 +8,10 @@ class Queue:
     def __init__(self, seed=rm.randint(0, 10 ** 5), days=50, lam=20, u=0.5, rooms=100):
         self.seed = seed
         rm.seed(self.seed)
-        self.lam = lam  # скорость прибытия клиентов на стойку регистрации
-        self.u = u  # 1\u - ожидаемое время пребывания клиента (дни) в отеле
-        self.days = days  # ограничение очереди количеством дней
-        self.rooms = rooms  # количество комнат
+        self.lam = lam           # скорость прибытия клиентов на стойку регистрации
+        self.u = u               # 1\u - ожидаемое время пребывания клиента (дни) в отеле
+        self.days = days         # ограничение очереди количеством дней
+        self.rooms = rooms       # количество комнат
         self.free_rooms = rooms  # количество свободных комнат
 
         self.tac = []  # time of arrival of clients
@@ -28,20 +28,6 @@ class Queue:
 
                 time_of_leave = time_of_arrive + 1 + int(rm.expovariate(u))
                 self.add_toe(time_of_leave, False)
-
-
-        # while self.tac[-1] < self.days:
-        #     time += rm.expovariate(lam)
-        #     if self.free_rooms > 0:
-        #         self.tac.append(time)
-        #         self.crt.append(1 + int(rm.expovariate(u)))
-        #         self.free_rooms -= 1
-        #     else:
-        #         pass
-
-        # self.timeline = [0 for i in range(int(self.tac[-1]) + 1)]
-        # for i in range(len(nums)):
-        #     self.timeline[int(self.tac[i])] += self.crt[i]
 
     def add_toe(self, time, customer_has_arrived: bool):
         if not self.time_of_events:
