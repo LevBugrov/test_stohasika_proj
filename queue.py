@@ -18,6 +18,7 @@ class Queue:
         self.requests_served = 0
         self.average_number_of_clients = [0] * days  # доделать
 
+        # цикл заполняющий массив временем поступления нового запроса
         time_of_arrive = 0
         time_next_request = rm.expovariate(lam)
 
@@ -26,7 +27,7 @@ class Queue:
             self.tac.append(time_of_arrive)
             time_next_request = rm.expovariate(lam)
 
-        # цикл заполняющий массив временем поступления нового запроса
+        # цикл заполняющий массив временем начала обработки заявок
         service_time = 0
         time_next_service = 0
         while service_time + time_next_service < days and self.time_of_next_client(service_time+time_next_service):
@@ -68,8 +69,7 @@ class Queue:
                         y=(arrays[array_name].sort if sort else arrays[array_name]))
             plt.show()
         else:
-            print(
-                "----------------------------------------\nмассив не найден\n----------------------------------------")
+            print("--------------------------------------\nмассив не найден\n--------------------------------------")
 
     def draw_hist(self):
         df = pd.DataFrame({'day': [i for i in range(self.days)], 'proceeds': self.days})
