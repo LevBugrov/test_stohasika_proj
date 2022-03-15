@@ -1,10 +1,16 @@
 import queue as qu
 
-days = 20
-queue_front_desk = qu.Queue(days=days, rooms=30)
-queue_online = qu.Queue(days=days, rooms=30)
-for i in range(days):
-    print(f"day N{i} number of free rooms: {queue_front_desk.free_rooms_alt(i)}")
+rooms = 10
+days = 5
+queue = qu.Queue(days=days, size=rooms)
+print(queue.requests_served)
+print(queue.spr)
+print(queue.tac)
+#queue.draw_("tac")
 
 
-print(queue_front_desk.profit)
+'''for i in range(days):
+    print(f"day N{i} number of free rooms: {queue.free_rooms_alt(i)}")
+'''
+
+# print(queue.profit)
