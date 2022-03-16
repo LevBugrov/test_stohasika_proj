@@ -1,3 +1,4 @@
+import contextvars
 import random as rm
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -5,7 +6,7 @@ import pandas as pd
 
 
 class Queue:
-    def __init__(self, seed=rm.randint(0, 10 ** 5), days=50, lam=1, u=2, size=10):
+    def __init__(self, seed=rm.randint(0, 10 ** 5), days=50, lam=20, u=1, size=10):
         self.seed = seed
         rm.seed(self.seed)
         self.lam = lam  # интенсивность прибытия запросов
@@ -14,7 +15,7 @@ class Queue:
         self.server_size = size  # максимальное количество запросов которое может обслужить сервер за раз
 
         self.tac = []  # time of arrival of clients
-        self.spr = []  # the time the server is processing requests and
+        self.spr = []  # the time the server is processing requests 
         self.requests_served = 0
         self.average_number_of_clients = [0] * days  # доделать
 
@@ -36,12 +37,24 @@ class Queue:
 
             if self._get_queued_requests(service_time) == 0:
                 service_time = self.time_of_next_client(service_time)
-                print('wait... to ', service_time)
-                server_is_waiting = True
-            requests_in_server_now = self._get_queued_requests(service_time)
-            self.requests_served += requests_in_server_now
-            self.spr.append((service_time, requests_in_server_now, server_is_waiting))
+
+            requests_in_queue = self._get_queued_requests(service_time)
+            requests_in_server = requests_in_queue if requests_in_queue <= self.server_size else self.server_size
+            self.requests_served += requests_in_server
             time_next_service = rm.expovariate(u)
+            # (время начала обслуживания, время обслуживания, количество людей в лифте, количество людей в очереди)
+            self.spr.append((service_time, time_next_service, requests_in_server, requests_in_queue - requests_in_server))
+
+        # распорядок каждого клиента
+        # (время когда клиент встал в очередь, время когда клиент вошел в лифт, время когда клиент покинул лифт)
+        self.client_schedule = []
+        tac_iter = 0
+
+        for i in self.spr:
+            k = i[2]
+            for j in range(k):
+                self.client_schedule.append((self.tac[tac_iter], i[0], i[0] + i[1]))
+                tac_iter += 1
 
     def _get_queued_requests(self, time):
         for i in range(len(self.tac)):
@@ -53,6 +66,13 @@ class Queue:
                 return out if out > 0 else 0
         return 0
 
+    def _a(self, time):
+        counter = 0
+        for i in self.client_schedule:
+            if i[0]<= time and i[2] > time:
+                counter += 1
+        return counter
+
     def time_of_next_client(self, time):
         for i in self.tac:
             if i >= time:
@@ -61,15 +81,14 @@ class Queue:
 
     def draw_(self, array_name: str, sort=False):
         arrays = {"tac": self.tac,
-                  "spr": self.spr,
-                  "average_number_of_clients": self.average_number_of_clients
+                  "spr": self.spr
                   }
         if array_name in arrays:
             sns.barplot(x=[i for i in range(len(arrays[array_name]))],
                         y=(arrays[array_name].sort if sort else arrays[array_name]))
             plt.show()
         else:
-            print("--------------------------------------\nмассив не найден\n--------------------------------------")
+            print("--------------------------------------\n массив не найден \n--------------------------------------")
 
     def draw_hist(self):
         df = pd.DataFrame({'day': [i for i in range(self.days)], 'proceeds': self.days})
