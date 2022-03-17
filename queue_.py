@@ -69,7 +69,7 @@ class Queue:
     def _a(self, time):
         counter = 0
         for i in self.client_schedule:
-            if i[0]<= time and i[2] > time:
+            if i[0]<= time and i[1] > time:
                 counter += 1
         return counter
 
