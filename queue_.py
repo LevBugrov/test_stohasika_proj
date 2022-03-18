@@ -78,18 +78,3 @@ class Queue:
             if i >= time:
                 return i
         return 0
-
-    def draw_(self, array_name: str, sort=False):
-        arrays = {"tac": self.tac,
-                  "spr": self.spr
-                  }
-        if array_name in arrays:
-            sns.barplot(x=[i for i in range(len(arrays[array_name]))],
-                        y=(arrays[array_name].sort if sort else arrays[array_name]))
-            plt.show()
-        else:
-            print("--------------------------------------\n массив не найден \n--------------------------------------")
-
-    def draw_hist(self):
-        df = pd.DataFrame({'day': [i for i in range(self.days)], 'proceeds': self.days})
-        sns.barplot(x='day', y='proceeds', data=df)
